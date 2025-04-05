@@ -114,7 +114,7 @@ let update = () => {
     if (pacman.checkGhostCollision(ghosts)) {
         onGhostCollision();
     }
-    if (pacman.checkWin()) {
+    if (score == 200) {
         drawWinner();
         clearInterval(gameInterval);
     }
