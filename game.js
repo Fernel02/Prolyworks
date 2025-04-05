@@ -114,6 +114,10 @@ let update = () => {
     if (pacman.checkGhostCollision(ghosts)) {
         onGhostCollision();
     }
+    if (pacman.checkWin()) {
+        drawWinner();
+        clearInterval(gameInterval);
+    }
 };
 
 let drawFoods = () => {
