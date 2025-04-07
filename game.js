@@ -2,6 +2,7 @@ const canvas = document.getElementById("canvas");
 const canvasContext = canvas.getContext("2d");
 const pacmanFrames = document.getElementById("animation");
 const ghostFrames = document.getElementById("ghosts");
+let level = 1; // Start at level 1
 
 let createRect = (x, y, width, height, color) => {
     canvasContext.fillStyle = color;
@@ -107,6 +108,46 @@ let onGhostCollision = () => {
     }
 };
 
+let resetMap = () => {
+    for (let i = 0; i < map.length; i++) {
+        for (let j = 0; j < map[0].length; j++) {
+            if (map[i][j] === 3) {
+                map[i][j] = 2; // Reset pellets
+            }
+        }
+    }
+};
+
+let restartLevel = () => {
+    ghosts = [];
+    createNewPacman();
+    createGhosts();
+    resetMap(); // Reset the map for the new level
+};
+
+let checkLevelProgress = () => {
+    let allPelletsEaten = true;
+    for (let i = 0; i < map.length; i++) {
+        for (let j = 0; j < map[0].length; j++) {
+            if (map[i][j] === 2) { // Check if any pellets are left
+                allPelletsEaten = false;
+                break;
+            }
+        }
+    }
+
+    if (allPelletsEaten) {
+        if (level === 1) {
+            level++;
+            restartLevel();
+            lives = 3; // Reset lives for the new level
+        } else {
+            drawWinner(); // Player wins after level 2
+            clearInterval(gameInterval);
+        }
+    }
+};
+
 let update = () => {
     pacman.moveProcess();
     pacman.eat();
@@ -114,10 +155,7 @@ let update = () => {
     if (pacman.checkGhostCollision(ghosts)) {
         onGhostCollision();
     }
-    if (score == 200) {
-        drawWinner();
-        clearInterval(gameInterval);
-    }
+    checkLevelProgress(); // Check if all pellets are eaten
 };
 
 let drawFoods = () => {
@@ -134,6 +172,12 @@ let drawFoods = () => {
             }
         }
     }
+};
+
+let drawLevel = () => {
+    canvasContext.font = "20px Emulogic";
+    canvasContext.fillStyle = "white";
+    canvasContext.fillText("Level: " + level, 100, oneBlockSize * (map.length + 1));  
 };
 
 let drawWinner = () => {
@@ -204,6 +248,7 @@ let draw = () => {
     pacman.draw();
     drawScore();
     drawRemainingLives();
+    drawLevel();
 };
 
 let drawWalls = () => {
@@ -261,9 +306,13 @@ let drawWalls = () => {
     }
 };
 
+
+
+
 let createGhosts = () => {
     ghosts = []; // Clear any existing ghosts
-    for (let i = 0; i < 4; i++) { // Ensure only 4 ghosts are created
+    let ghostCount = level === 1 ? 4 : 9; // 4 ghosts for level 1, 9 ghosts for level 2
+    for (let i = 0; i < ghostCount; i++) {
         let newGhost = new Ghost(
             9 * oneBlockSize + (i % 2 == 0 ? 0 : 1) * oneBlockSize,
             10 * oneBlockSize + (i % 2 == 0 ? 0 : 1) * oneBlockSize,
