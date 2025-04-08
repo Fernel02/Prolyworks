@@ -30,7 +30,7 @@ let score = 0;
 let ghosts = [];
 let wallSpaceWidth = oneBlockSize / 1.6;
 let wallOffset = (oneBlockSize - wallSpaceWidth) / 2;
-let wallInnerColor = "black";
+let wallInnerColor = "#2E2E2E";
 
 // we now create the map of the walls,
 // if 1 wall, if 0 not wall
@@ -162,21 +162,25 @@ let drawFoods = () => {
     for (let i = 0; i < map.length; i++) {
         for (let j = 0; j < map[0].length; j++) {
             if (map[i][j] == 2) {
-                createRect(
-                    j * oneBlockSize + oneBlockSize / 3,
-                    i * oneBlockSize + oneBlockSize / 3,
-                    oneBlockSize / 3,
-                    oneBlockSize / 3,
-                    "#FEB897"
+                 canvasContext.beginPath();
+                 canvasContext.arc(
+                     j * oneBlockSize + oneBlockSize / 2,
+                     i * oneBlockSize + oneBlockSize / 2,
+                     oneBlockSize / 6,
+                     0,
+                     2 * Math.PI
                 );
+               canvasContext.fillStyle = "#FF0000"; // red like a bauble or ornament
+               canvasContext.fill();
             }
         }
     }
 };
 
 let drawLevel = () => {
-    canvasContext.font = "20px Emulogic";
-    canvasContext.fillStyle = "white";
+    canvasContext.font = "20px 'Mountains of Christmas'";
+    canvasContext.fillStyle = "#FFD700"; // gold
+    
     canvasContext.fillText("Level: " + level, 100, oneBlockSize * (map.length + 1));  
 };
 
@@ -184,7 +188,7 @@ let drawWinner = () => {
     canvasContext.font = "40px Emulogic";
     canvasContext.fillStyle = "white";
     canvasContext.fillText("You Win!", 115, 250);
-    
+
 };
 
 let gameOver = () => {
@@ -208,8 +212,9 @@ let drawRestartGame = () => {
 
 
 let drawRemainingLives = () => {
-    canvasContext.font = "20px Emulogic";
-    canvasContext.fillStyle = "white";
+    canvasContext.font = "20px 'Mountains of Christmas'";
+    canvasContext.fillStyle = "#FFD700"; // gold
+    
     canvasContext.fillText(
         "Lives: ",
          220,
@@ -231,8 +236,9 @@ let drawRemainingLives = () => {
 };
 
 let drawScore = () => {
-    canvasContext.font = "20px Emulogic";
-    canvasContext.fillStyle = "white";
+    canvasContext.font = "20px 'Mountains of Christmas'";
+    canvasContext.fillStyle = "#FFD700"; // gold
+    
     canvasContext.fillText(
         "Score: " + score,
         0,
@@ -242,7 +248,7 @@ let drawScore = () => {
 
 let draw = () => {
     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-    createRect(0, 0, canvas.width, canvas.height, "black");
+    createRect(0, 0, canvas.width, canvas.height, "rgba(255, 255, 255, 0.1)");
     drawWalls();
     drawFoods();
     drawGhosts();
