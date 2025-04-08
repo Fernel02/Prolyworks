@@ -30,7 +30,7 @@ let score = 0;
 let ghosts = [];
 let wallSpaceWidth = oneBlockSize / 1.6;
 let wallOffset = (oneBlockSize - wallSpaceWidth) / 2;
-let wallInnerColor = "#2E2E2E";
+let wallInnerColor ="rgba(0, 0, 0, 0.97)";
 
 // we now create the map of the walls,
 // if 1 wall, if 0 not wall
@@ -248,7 +248,8 @@ let drawScore = () => {
 
 let draw = () => {
     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-    createRect(0, 0, canvas.width, canvas.height, "rgba(255, 255, 255, 0.1)");
+    createRect(0, 0, canvas.width, canvas.height, "rgba(255, 255, 255, 0)");
+    drawSnow(); // Draw snowflakes
     drawWalls();
     drawFoods();
     drawGhosts();
@@ -309,6 +310,39 @@ let drawWalls = () => {
                     );
                 }
             }
+        }
+    }
+};
+
+let snowflakes = [];
+for (let i = 0; i < 100; i++) {
+    snowflakes.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 3 + 2,
+        d: Math.random() * 1 + 0.5
+    });
+};
+
+function drawSnow() {
+    canvasContext.fillStyle = "white";
+    canvasContext.beginPath();
+    for (let i = 0; i < snowflakes.length; i++) {
+        let f = snowflakes[i];
+        canvasContext.moveTo(f.x, f.y);
+        canvasContext.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
+    }
+    canvasContext.fill();
+    updateSnow();
+};
+
+function updateSnow() {
+    for (let i = 0; i < snowflakes.length; i++) {
+        let f = snowflakes[i];
+        f.y += f.d;
+        if (f.y > canvas.height) {
+            f.y = 0;
+            f.x = Math.random() * canvas.width;
         }
     }
 };
