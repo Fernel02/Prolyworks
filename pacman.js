@@ -9,10 +9,36 @@ class Pacman {
         this.nextDirection = 4;
         this.frameCount = 7;
         this.currentFrame = 1;
+        this.justTeleported = false;
         setInterval(() => {
             this.changeAnimation();
         }, 100);
     }
+
+    checkTunnel() {
+        // Check if Pacman is on the specific tunnel row
+        if (this.getMapY() === 10) {  
+            // Only allow teleportation if not just teleported.
+            if (!this.justTeleported) {
+                // If on the right edge, teleport to the left side (and vice versa)
+                if (this.getMapX() === map[0].length - 1) {
+                    this.x = 0; // Teleport to far left
+                    this.justTeleported = true;
+                }
+                else if (this.getMapX() === 0) {
+                    this.x = (map[0].length - 1) * oneBlockSize; // Teleport to far right
+                    this.justTeleported = true;
+                }
+            } else {
+                // If Pacman has moved away from the edge,
+                // reset the teleport flag once he's in a "safe" cell.
+                if (this.getMapX() > 0 && this.getMapX() < map[0].length - 1) {
+                    this.justTeleported = false;
+                }
+            }
+        }
+    }
+    
 
     moveProcess() {
         this.changeDirectionIfPossible();
@@ -21,6 +47,7 @@ class Pacman {
             this.moveBackwards();
             return;
         }
+        this.checkTunnel();
     }
 
     eat() {
