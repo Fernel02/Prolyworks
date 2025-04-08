@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-      <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas&display=swap" rel="stylesheet">
      <audio autoplay loop>
       <source src="jingle-bells.mp3" type="audio/mpeg">
      </audio>
@@ -15,13 +15,19 @@
             height: 100vh;
             background-color: #1E1E1E;
             margin: 0;
+            background: url("snow-background.jpg") no-repeat center center fixed;
+            background-size: cover;
+            /* Use a fun, themed font */
+            font-family: 'Mountains of Christmas', cursive;
         }
         #canvas {
             display: block;
             border: 5px solid rgb(0, 0, 0);
             box-shadow: 0px 0px 20px rgb(0, 0, 0);
-            background-color: black;
+            /* Optionally keep the canvas background transparent to show the snowy image */
+            background-color: rgba(0, 0, 0, 0.5);
         }
+
     </style>
     
     <meta charset="UTF-8">
@@ -30,7 +36,7 @@
     <title>Pacman</title>
 </head>
 
-<body style="margin: 0; background-color: black;">
+<body style="margin: 0; background-color: rgb(0, 0, 0);">
     <canvas id="canvas" width="500" height="500"></canvas>
     <div style="display:none;">
         <img id="animation" src="animations.gif" width="140" height="20">
