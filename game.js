@@ -184,6 +184,7 @@ let drawWinner = () => {
     canvasContext.font = "40px Emulogic";
     canvasContext.fillStyle = "white";
     canvasContext.fillText("You Win!", 115, 250);
+    
 };
 
 let gameOver = () => {
