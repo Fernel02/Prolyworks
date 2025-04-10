@@ -185,8 +185,8 @@ let drawLevel = () => {
 };
 
 let drawWinner = () => {
-    canvasContext.font = "40px Emulogic";
-    canvasContext.fillStyle = "white";
+    canvasContext.font = "40px Mountains of Christmas";
+    canvasContext.fillStyle = "#FFD700";
     canvasContext.fillText("You Win!", 115, 250);
 
 };
@@ -198,14 +198,14 @@ let gameOver = () => {
 };
 
 let drawGameOver = () => {
-    canvasContext.font = "40px Emulogic";
+    canvasContext.font = "40px Mountains of Christmas";
     canvasContext.fillStyle = "white";
     canvasContext.fillText("Game Over!", 115, 250);
 
 };
 
 let drawRestartGame = () => {
-    canvasContext.font = "20px Emulogic";
+    canvasContext.font = "20px Mountains of Christmas";
     canvasContext.fillStyle = "white";
     canvasContext.fillText("Press F5 to restart", 140, 290);
 };
