@@ -70,7 +70,7 @@ class Ghost {
     let dx = targetX - this.x;
     let dy = targetY - this.y;
     // Use a lerp factor (between 0 and 1) for smoothing:
-    let lerpFactor = 0.2;  // Increase for faster movement, decrease for smoother but slower movement
+    let lerpFactor = 0.2;  
     this.x += dx * lerpFactor;
     this.y += dy * lerpFactor;
  }

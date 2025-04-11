@@ -33,7 +33,7 @@ let wallOffset = (oneBlockSize - wallSpaceWidth) / 2;
 let wallInnerColor ="rgba(0, 0, 0, 0.97)";
 
 // we now create the map of the walls,
-// if 1 wall, if 0 not wall
+// if 1 wall, if 0 not wall, 2 pellet, 3 pellet eaten, 4 super pellet
 // 21 columns // 23 rows
 let map = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -198,7 +198,7 @@ function activatePowerPellet() {
             ghost.isScared = false;
             ghost.speed = ghost.speed / 0.5;
         });
-    }, 10000); // 10 seconds
+    }, 2000); // 10 seconds
 };
 
 
@@ -500,6 +500,28 @@ function startCelebrationAnimation() {
     // Start the animation loop
     updateConfetti();
 };
+
+//geture controls
+const hammer = new Hammer(document.body);
+hammer.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+
+hammer.on('swipeleft', () => pacman.nextDirection = DIRECTION_LEFT);
+hammer.on('swiperight', () => pacman.nextDirection = DIRECTION_RIGHT);
+hammer.on('swipeup', () => pacman.nextDirection = DIRECTION_UP);
+hammer.on('swipedown', () => pacman.nextDirection = DIRECTION_BOTTOM);
+
+function resizeCanvas() {
+    const canvas = document.getElementById("canvas");
+    const containerWidth = window.innerWidth;
+    const containerHeight = window.innerHeight;
+    // Keep a fixed aspect ratio. This example uses a square.
+    const size = Math.min(containerWidth, containerHeight) * 0.9; 
+    canvas.width = size;
+    canvas.height = size;
+    // Also update related variables (e.g., oneBlockSize) if it relies on canvas dimensions
+};
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas(); // initial call
 
 
 createNewPacman();
