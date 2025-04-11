@@ -1,18 +1,9 @@
 class Ghost {
-    constructor(
-        x,
-        y,
-        width,
-        height,
-        speed,
-        imageX,
-        imageY,
-        imageWidth,
-        imageHeight,
-        range
-    ) {
+    constructor(x, y, width, height, speed, imageX, imageY, imageWidth, imageHeight, range) {
         this.x = x;
         this.y = y;
+        this.startX = x;       // Save initial x
+        this.startY = y;       // Save initial y
         this.width = width;
         this.height = height;
         this.speed = speed;
@@ -24,6 +15,7 @@ class Ghost {
         this.range = range;
         this.randomTargetIndex = parseInt(Math.random() * 4);
         this.target = randomTargetsForGhosts[this.randomTargetIndex];
+        this.isScared = false; // Add a flag for "scared" state
         setInterval(() => {
             this.changeRandomDirection();
         }, 1000);
@@ -62,6 +54,12 @@ class Ghost {
     }
  }
 
+ respawn() {
+    this.x = this.startX;
+    this.y = this.startY;
+    this.isScared = false;  // Reset to normal state
+}
+
  isAtCellCenter(tolerance) {
     let centerX = (this.getMapX() + 0.5) * oneBlockSize - this.width / 2;
     let centerY = (this.getMapY() + 0.5) * oneBlockSize - this.height / 2;
@@ -79,7 +77,17 @@ class Ghost {
 
  moveProcess() {
     this.snapToGrid();
+    if (this.isScared) {
+        let awayX = this.x - pacman.x;
+        let awayY = this.y - pacman.y;
+        // Set a temporary target for pathfinding (scale appropriately)
+        this.target = {
+            x: this.x + awayX,
+            y: this.y + awayY
+        };
+    }
 
+    else{
     // Determine the target for pathfinding
     if (this.isInRange()) {
         this.target = pacman;
@@ -118,6 +126,7 @@ class Ghost {
         // Continue moving in the current direction if not at center
         this.moveForwards();
     }
+}
 
     if (this.checkCollisions()) {
         this.moveBackwards();
@@ -311,8 +320,14 @@ class Ghost {
 
     draw() {
         canvasContext.save();
+        // Apply a blue tint if scared using a CSS filter, or choose an alternative sprite frame
+        if (this.isScared) {
+            canvasContext.filter = "hue-rotate(180deg) brightness(1.5)";
+        } else {
+            canvasContext.filter = "none";
+        }
         canvasContext.drawImage(
-            ghostFrames,
+            ghostFrames, // This still refers to your sprite image
             this.imageX,
             this.imageY,
             this.imageWidth,
@@ -324,9 +339,9 @@ class Ghost {
         );
         canvasContext.restore();
         canvasContext.beginPath();
-
         canvasContext.stroke();
     }
+    
 
 }
 

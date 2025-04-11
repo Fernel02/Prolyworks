@@ -40,7 +40,7 @@ let map = [
     [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
     [1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1],
     [1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1],
-    [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+    [1, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
     [1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1],
     [1, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1],
     [1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1],
@@ -56,7 +56,7 @@ let map = [
     [1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1],
     [1, 1, 2, 2, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 2, 2, 1, 1],
     [1, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1],
-    [1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1],
+    [1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 4, 1],
     [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
@@ -152,11 +152,56 @@ let update = () => {
     pacman.moveProcess();
     pacman.eat();
     updateGhosts();
-    if (pacman.checkGhostCollision(ghosts)) {
-        onGhostCollision();
+    for (let i = 0; i < ghosts.length; i++) {
+        let ghost = ghosts[i];
+        // Check if Pacman and ghost share the same grid cell.
+        if (ghost.getMapX() === pacman.getMapX() && ghost.getMapY() === pacman.getMapY()) {
+            if (ghost.isScared) {
+                // Pacman eats the ghost: increase score and respawn the ghost.
+                score += 50; 
+                ghost.respawn();
+            } else {
+                // Ghost is not scared: lose a life and restart
+                onGhostCollision();
+            }
+        }
     }
     checkLevelProgress(); // Check if all pellets are eaten
 };
+
+function activatePowerPellet() {
+    // Set all ghosts to scared mode
+    ghosts.forEach(ghost => {
+        ghost.isScared = true;
+        
+        ghost.speed = ghost.speed * 1.5;
+    });
+    
+    // After a certain duration, revert the state
+    setTimeout(() => {
+        ghosts.forEach(ghost => {
+            ghost.isScared = false;
+            // Reset ghost speed to normal if modified:
+            ghost.speed = ghost.speed / 1.5;
+        });
+    }, 10000); // 10 seconds (adjust as needed)
+};
+
+function activatePowerPellet() {
+    // Set all ghosts to the scared state
+    ghosts.forEach(ghost => {
+        ghost.isScared = true;
+    });
+    // Set a timeout to revert them back to normal after, 10 seconds.
+    setTimeout(() => {
+        ghosts.forEach(ghost => {
+            ghost.isScared = false;
+            ghost.speed = ghost.speed / 0.5;
+        });
+    }, 10000); // 10 seconds
+};
+
+
 
 let drawFoods = () => {
     for (let i = 0; i < map.length; i++) {
@@ -172,6 +217,19 @@ let drawFoods = () => {
                 );
                canvasContext.fillStyle = "#FF0000"; // red like a bauble or ornament
                canvasContext.fill();
+            }else if (map[i][j] === 4) { // Super pellet
+                // For super pellet, you can draw a larger circle with a distinct color
+                canvasContext.beginPath();
+                // For example, a glowing blue pellet.
+                canvasContext.arc(
+                    j * oneBlockSize + oneBlockSize / 2,
+                    i * oneBlockSize + oneBlockSize / 2,
+                    oneBlockSize / 3,  // larger pellet
+                    0,
+                    Math.PI * 2
+                );
+                canvasContext.fillStyle = "rgba(255, 198, 12, 0.97)"; // gold color
+                canvasContext.fill();
             }
         }
     }
