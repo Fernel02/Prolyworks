@@ -189,6 +189,9 @@ let drawWinner = () => {
     canvasContext.fillStyle = "#FFD700";
     canvasContext.fillText("You Win!", 115, 250);
 
+    startCelebrationAnimation(); // Start the celebration 
+    
+
 };
 
 let gameOver = () => {
@@ -369,6 +372,77 @@ let createGhosts = () => {
         ghosts.push(newGhost);
     }
 };
+
+// Function to start the celebration animation (confetti effect)
+function startCelebrationAnimation() {
+    const confettiParticles = [];
+    const numParticles = 200; // Number of confetti pieces. Adjust as needed.
+    const duration = 5000; // Duration of animation in milliseconds (e.g., 5 seconds)
+    const startTime = Date.now();
+
+    // Function to generate a random confetti color
+    function getRandomConfettiColor() {
+        const colors = ["#FF0000", "#00FF00", "#FFD700", "#FF00FF", "#00FFFF", "#FFA500"];
+        return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    // Create particles: each particle is an object with properties for position, velocity, radius, and opacity.
+    for (let i = 0; i < numParticles; i++) {
+        confettiParticles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 4 + 2, // radius between 2 and 6 pixels
+            color: getRandomConfettiColor(),
+            velocityX: (Math.random() - 0.5) * 8, // random horizontal speed
+            velocityY: Math.random() * -8 - 2,     // random upward speed
+            opacity: 1,
+            gravity: 0.2 // Acceleration downwards
+        });
+    }
+
+    // Animation loop function
+    function updateConfetti() {
+        // Clear the canvas for the next frame
+        canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+
+        drawWinner(); // Draw winner screen
+
+        // Update and draw each confetti particle
+        for (let i = 0; i < confettiParticles.length; i++) {
+            let p = confettiParticles[i];
+            // Update particle position
+            p.x += p.velocityX;
+            p.y += p.velocityY;
+            p.velocityY += p.gravity;
+            p.opacity -= 0.005; // Fade out slowly
+
+            // Draw particle if still visible
+            if (p.opacity > 0) {
+                canvasContext.beginPath();
+                canvasContext.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                canvasContext.fillStyle = p.color;
+                // Apply opacity to the confetti piece
+                canvasContext.globalAlpha = p.opacity;
+                canvasContext.fill();
+            }
+        }
+        // Reset globalAlpha
+        canvasContext.globalAlpha = 1;
+      
+        // Check duration: Stop the animation after the duration has elapsed
+        if (Date.now() - startTime < duration) {
+            requestAnimationFrame(updateConfetti);
+        } else {
+            // Clear the canvas and stop the animation
+            canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+            drawWinner(); // Draw winner screen without confetti if needed.
+        }
+    }
+
+    // Start the animation loop
+    updateConfetti();
+};
+
 
 createNewPacman();
 createGhosts();
