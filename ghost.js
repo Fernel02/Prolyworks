@@ -46,22 +46,87 @@ class Ghost {
         this.randomTargetIndex += addition;
         this.randomTargetIndex = this.randomTargetIndex % 4;
     }
+    
+    // In ghost.js, inside the Ghost class:
 
-    moveProcess() {
-        if (this.isInRange()) {
-            this.target = pacman;
-        } else {
-            this.target = randomTargetsForGhosts[this.randomTargetIndex];
-        }
-        this.changeDirectionIfPossible();
-        this.moveForwards();
+ snapToGrid() {
+    let currentCellX = this.getMapX();
+    let currentCellY = this.getMapY();
+    let cellCenterX = (currentCellX + 0.5) * oneBlockSize - this.width / 2;
+    let cellCenterY = (currentCellY + 0.5) * oneBlockSize - this.height / 2;
+    let tolerance = 3; // pixels
 
-        if (this.checkCollisions()) {
-            this.moveBackwards();
-            return;
-
-        }
+    if (Math.abs(this.x - cellCenterX) < tolerance && Math.abs(this.y - cellCenterY) < tolerance) {
+        this.x = cellCenterX;
+        this.y = cellCenterY;
     }
+ }
+
+ isAtCellCenter(tolerance) {
+    let centerX = (this.getMapX() + 0.5) * oneBlockSize - this.width / 2;
+    let centerY = (this.getMapY() + 0.5) * oneBlockSize - this.height / 2;
+    return (Math.abs(this.x - centerX) < tolerance && Math.abs(this.y - centerY) < tolerance);
+}
+ moveSmoothlyTo(targetX, targetY) {
+    // Calculate the difference between current position and target cell center
+    let dx = targetX - this.x;
+    let dy = targetY - this.y;
+    // Use a lerp factor (between 0 and 1) for smoothing:
+    let lerpFactor = 0.2;  // Increase for faster movement, decrease for smoother but slower movement
+    this.x += dx * lerpFactor;
+    this.y += dy * lerpFactor;
+ }
+
+ moveProcess() {
+    this.snapToGrid();
+
+    // Determine the target for pathfinding
+    if (this.isInRange()) {
+        this.target = pacman;
+    } else {
+        this.target = randomTargetsForGhosts[this.randomTargetIndex];
+    }
+
+    if (this.isAtCellCenter(3)) {
+        this.direction = this.calculateNewDirection(
+            map,
+            parseInt(this.target.x / oneBlockSize),
+            parseInt(this.target.y / oneBlockSize)
+        );
+        // Determine the center of the next cell based on the new direction:
+        let nextCellX = this.getMapX();
+        let nextCellY = this.getMapY();
+        switch (this.direction) {
+            case DIRECTION_RIGHT:
+                nextCellX++;
+                break;
+            case DIRECTION_LEFT:
+                nextCellX--;
+                break;
+            case DIRECTION_UP:
+                nextCellY--;
+                break;
+            case DIRECTION_BOTTOM:
+                nextCellY++;
+                break;
+        }
+        let targetCenterX = (nextCellX + 0.5) * oneBlockSize - this.width / 2;
+        let targetCenterY = (nextCellY + 0.5) * oneBlockSize - this.height / 2;
+        // Smoothly move toward that target center
+        this.moveSmoothlyTo(targetCenterX, targetCenterY);
+    } else {
+        // Continue moving in the current direction if not at center
+        this.moveForwards();
+    }
+
+    if (this.checkCollisions()) {
+        this.moveBackwards();
+        return;
+    }
+ }
+
+
+    
 
     moveBackwards() {
         switch (this.direction) {
@@ -262,6 +327,7 @@ class Ghost {
 
         canvasContext.stroke();
     }
+
 }
 
 let updateGhosts = () => {
